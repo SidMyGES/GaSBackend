@@ -12,13 +12,11 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(title = "Grab a Slice API", version = "v1", description = "Temporary API contract for Grab a Slice!"),
         security = @SecurityRequirement(name = "bearerAuthentication")
 )
-
 @SecurityScheme(
         name = "bearerAuthentication",
         type = SecuritySchemeType.HTTP,
         scheme = "bearer",
         bearerFormat = "JWT"
 )
-
 public class SwaggerConfig {
 }
