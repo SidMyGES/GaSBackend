@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "app_user")
@@ -37,10 +38,7 @@ public class User {
     @Schema(description = "User's password", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
-    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Schema(description = "Comments written by the user", accessMode = Schema.AccessMode.READ_ONLY)
-    private Set<Comment> comments = new HashSet<>();
-
+    // Relation Many-to-Many avec Skill
     @ManyToMany
     @JoinTable(
             name = "user_skills",
@@ -62,6 +60,11 @@ public class User {
     @Schema(description = "Number of likes received by the user")
     private int likes;
 
+    // Relation One-to-Many avec Comment (le champ "writer" dans Comment est le propriétaire)
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Schema(description = "Comments made by the user", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Comment> comments = new HashSet<>();
+
     public User(final String name, final String lastName, final String email, final String password) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
@@ -75,11 +78,32 @@ public class User {
         this.skills.addAll(Arrays.asList(skills));
     }
 
+    public void addSkills(Skill... skills) {
+        this.skills.addAll(Arrays.asList(skills));
+    }
+
+
+
     public void setProjects(final Project... projects) {
         this.projects.addAll(Arrays.asList(projects));
     }
 
+    // Méthode qui gère la relation bidirectionnelle
+    public void addProject(Project project) {
+        this.projects.add(project);
+        project.getCollaborators().add(this);
+    }
     public void setComments(final Comment... comments) {
         this.comments.addAll(Arrays.asList(comments));
     }
+
+    public void addComments(Comment... comments) {
+        this.comments.addAll(Arrays.asList(comments));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }
