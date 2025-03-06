@@ -27,8 +27,13 @@ public class ProjectController {
         return projectService.getProject(id);
     }
 
+    @GetMapping("/user/{id}")
+    public List<ProjectDTO> getProjectByUser(@RequestParam String id) {
+        return projectService.getProjectByUser(id);
+    }
+
     @PostMapping
-    public ProjectDTO createProject(@RequestBody Project project) {
+    public ProjectDTO createProject(@RequestBody ProjectDTO project) {
         return projectService.createProject(project);
     }
 
@@ -38,7 +43,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public ProjectDTO updateProject(@RequestParam String id,@RequestBody Project project) {
+    public ProjectDTO updateProject(@RequestParam String id,@RequestBody ProjectDTO project) {
         return projectService.updateProject(id, project);
     }
 
@@ -54,7 +59,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{id}/addSkill")
-    public void addSkill(@RequestParam String id,@RequestBody Skill skill) {
+    public void addSkill(@RequestParam String id,@RequestBody Skill skill) { //todo avoir le DTO
         projectService.addSkill(id, skill);
     }
 

@@ -19,15 +19,18 @@ import java.util.UUID;
 public class Project {
 
     @Id
-    @Setter(AccessLevel.NONE)
     @Schema(description = "Unique identifier for the project", accessMode = Schema.AccessMode.READ_ONLY)
     private String id;
 
     @Schema(description = "Name of the project", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
+    @Schema(description = "Description of the project")
+    private String description;
+
     @Schema(description = "Number of likes received by the project")
-    private int likes;
+    @ManyToMany
+    private Set<User> likedBy = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "project_id")
@@ -57,9 +60,10 @@ public class Project {
     @Schema(description = "Slices associated with this project")
     private Set<Slice> slices = new HashSet<>();
 
-    public Project(final String name) {
+    public Project(final String name, String description) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
+        this.description = description;
     }
 
     public void addComments(final Comment... comments) {

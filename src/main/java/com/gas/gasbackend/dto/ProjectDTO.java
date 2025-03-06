@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Schema(description = "Data transfer object representing a project (pizza) that a user has worked on.")
 public class ProjectDTO {
     @Schema(description = "Unique identifier for the project")
-    private String ID;
+    private String id;
     @Schema(description = "Name of the project")
     private String name;
 
@@ -28,16 +28,16 @@ public class ProjectDTO {
     private Set<String> skillsUsed;
 
     @Schema(description = "Users who collaborated on this project")
-    private Set<String> collaborators;
+    private Set<User> collaborators; //todo changer en DTO
 
     @Schema(description = "Slices (mentorship offers/requests) associated with this project")
-    private Set<String> slices;
+    private Set<Slice> slices; //todo changer en DTO
 
     @Schema(description = "Number of comments left on the project")
     private int commentCount;
 
-    public ProjectDTO(String ID, String name, String description, int likedBy, Set<String> skillsUsed, Set<String> collaborators, Set<String> slices, int commentCount) {
-        this.ID = ID;
+    public ProjectDTO(String id, String name, String description, int likedBy, Set<String> skillsUsed, Set<User> collaborators, Set<Slice> slices, int commentCount) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.likes = likedBy;
@@ -51,9 +51,13 @@ public class ProjectDTO {
     public static ProjectDTO fromEntity(Project project) {
         int likedBy = project.getLikedBy().size();
         Set<String> skillsUsed = project.getSkillsUsed().stream().map(Skill::getName).collect(Collectors.toSet());
-        Set<String> collaborators = project.getCollaborators().stream().map(User::getName).collect(Collectors.toSet()); // TODO changer en DTO
-        Set<String> slices = project.getSlices().stream().map(Slice::getID).collect(Collectors.toSet());
+        Set<User> collaborators = project.getCollaborators(); // TODO changer en DTO
+        Set<Slice> slices = project.getSlices(); // TODO changer en DTO
         int commentCount = project.getComments().size();
-        return new ProjectDTO(project.getID(), project.getName(), project.getDescription(), likedBy, skillsUsed, collaborators, slices, commentCount);
+        return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), likedBy, skillsUsed, collaborators, slices, commentCount);
+    }
+
+    public static Project toEntity(ProjectDTO project) {
+        return new Project(project.getName(), project.getDescription());
     }
 }

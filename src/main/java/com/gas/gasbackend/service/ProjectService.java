@@ -21,23 +21,35 @@ public class ProjectService {
         return ProjectDTO.fromEntity(projectRepository.findById(id).orElse(null));
     }
 
-    public ProjectDTO createProject(Project project) {
-        return ProjectDTO.fromEntity(projectRepository.save(project));
+    public ProjectDTO createProject(ProjectDTO project) {
+        return ProjectDTO.fromEntity(projectRepository.save(ProjectDTO.toEntity(project)));
+    }
+
+    public List<ProjectDTO> getProjectByUser(String userId) {
+        return projectRepository.findProjectsByCollaboratorId(userId)
+                .stream()
+                .map(ProjectDTO::fromEntity)
+                .toList();
     }
 
     public void deleteProject(String id) {
         projectRepository.deleteById(id);
     }
 
-    public ProjectDTO updateProject(String id, Project project) {
-        project.setID(id);
-        return ProjectDTO.fromEntity(projectRepository.save(project));
+    public ProjectDTO updateProject(String id, ProjectDTO project) {
+        Project projectToUpdate = projectRepository.findById(id).orElse(null);
+        if (projectToUpdate != null) {
+            projectToUpdate.setName(project.getName());
+            projectToUpdate.setDescription(project.getDescription());
+            return ProjectDTO.fromEntity(projectRepository.save(projectToUpdate));
+        }
+        return null;
     }
 
     public void likeProject(String id, String userId) {
         Project project = projectRepository.findById(id).orElse(null);
         if (project != null) {
-            project.getLikedBy().add(userId);
+//            project.getLikedBy().add(userId); // TODO avoir le userrepo pour trouver le user
             projectRepository.save(project);
         }
     }
@@ -62,7 +74,7 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElse(null);
 
         if (project != null) {
-            project.getSkillsUsed().removeIf(skill -> skill.getID().equals(skillId));
+            project.getSkillsUsed().removeIf(skill -> skill.getId().equals(skillId));
             projectRepository.save(project);
         }
     }
@@ -79,7 +91,7 @@ public class ProjectService {
     public void removeCollaborator(String id, String collaborator) {
         Project project = projectRepository.findById(id).orElse(null);
         if (project != null) {
-            project.getCollaborators().removeIf(user -> user.getID().equals(collaborator));
+            project.getCollaborators().removeIf(user -> user.getId().equals(collaborator));
             projectRepository.save(project);
         }
     }
@@ -95,7 +107,7 @@ public class ProjectService {
     public void removeSlice(String id, String sliceId) {
         Project project = projectRepository.findById(id).orElse(null);
         if (project != null) {
-            project.getSlices().removeIf(slice -> slice.getID().equals(sliceId));
+            project.getSlices().removeIf(slice -> slice.getId().equals(sliceId));
             projectRepository.save(project);
         }
     }
@@ -111,7 +123,7 @@ public class ProjectService {
     public void removeComment(String id, String commentId) {
         Project project = projectRepository.findById(id).orElse(null);
         if (project != null) {
-            project.getComments().removeIf(comment -> comment.getID().equals(commentId));
+            project.getComments().removeIf(comment -> comment.getId().equals(commentId));
             projectRepository.save(project);
         }
     }
