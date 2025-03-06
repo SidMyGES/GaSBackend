@@ -1,66 +1,77 @@
 package com.gas.gasbackend.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
+@Entity
+@Table(name = "app_user")
 @Data
+@NoArgsConstructor
 @Schema(description = "Represents a user in the Grab a Slice platform")
 public class User {
 
+    @Id
     @Setter(AccessLevel.NONE)
     @Schema(description = "Unique identifier for the user",
             accessMode = Schema.AccessMode.READ_ONLY)
-    private String ID;
+    private String id;
 
-    @Schema(description = "User's first name",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "User's first name", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @Schema(description = "User's last name",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "User's last name", requiredMode = Schema.RequiredMode.REQUIRED)
     private String lastName;
 
-    @Schema(description = "User's email address",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "User's email address", requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
 
-    @Schema(description = "User's password",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "User's password", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
-    @Schema(description = "Set of skills the user has",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private final Set<Skill> skills;
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Schema(description = "Comments written by the user", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Comment> comments = new HashSet<>();
 
-    @Schema(description = "Projects the user is working on or has created",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private final Set<Project> projects;
+    @ManyToMany
+    @JoinTable(
+            name = "user_skills",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    @Schema(description = "Set of skills the user has", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Skill> skills = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_projects",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Project> projects = new HashSet<>();
 
     @Schema(description = "Number of likes received by the user")
-    private int likes; //to change
-
-    @Schema(description = "Comments made under user's profile",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private final Set<Comment> comments;
+    private int likes;
 
     public User(final String name, final String lastName, final String email, final String password) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.skills = new HashSet<>();
-        this.projects = new HashSet<>();
         this.likes = 0;
-        this.comments = new HashSet<>();
     }
 
-    public void setSkills(final Skill... skills){
+    public void setSkills(final Skill... skills) {
         this.skills.addAll(Arrays.asList(skills));
     }
 
@@ -72,4 +83,3 @@ public class User {
         this.comments.addAll(Arrays.asList(comments));
     }
 }
-
