@@ -62,7 +62,7 @@ public class Project {
 
     // Constructeur avec argument (l'ID est généré automatiquement)
     public Project(final String name) {
-        this.ID = UUID.randomUUID().toString();
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.likes = 0;
     }
