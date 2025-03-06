@@ -1,10 +1,12 @@
 package com.gas.gasbackend.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.UUID;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,14 +19,11 @@ import lombok.Setter;
 public class Skill {
 
     @Id
-    @JsonProperty("ID")
-    @Setter  // Permet d'affecter un ID si besoin
-    @Schema(description = "Unique identifier for the skill",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private String ID;
+    @Setter(AccessLevel.NONE)
+    @Schema(description = "Unique identifier for the skill", accessMode = Schema.AccessMode.READ_ONLY)
+    private String id;
 
-    @Schema(description = "The name of the skill",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Name of the skill", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
     @Schema(description = "The shape associated with the skill for visual representation",
@@ -33,7 +32,7 @@ public class Skill {
 
     public Skill(String name, String shapeName) {
         // Génération automatique de l'ID
-        this.ID = java.util.UUID.randomUUID().toString();
+        this.id = java.util.UUID.randomUUID().toString();
         this.name = name;
         this.shapeName = shapeName;
     }
