@@ -1,10 +1,7 @@
 package com.gas.gasbackend.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Table(name = "comments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "Represents user comments left under: other users, projects, or slices")
 public class Comment {
@@ -35,6 +33,10 @@ public class Comment {
 
     @Schema(description = "The content of the comment", requiredMode = Schema.RequiredMode.REQUIRED)
     private String content;
+
+    @Schema(description = "The project the comment is written under")
+    @ManyToOne
+    private Project project;
 
     @SuppressWarnings("unused")
     public Comment(final User writer, final Comment parent, final String content) {

@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Table(name = "projects")
 @NoArgsConstructor
 @Schema(description = "Represents a project created by users.")
 public class Project {

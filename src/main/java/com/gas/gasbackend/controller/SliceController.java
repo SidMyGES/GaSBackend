@@ -1,6 +1,5 @@
 package com.gas.gasbackend.controller;
 
-import com.gas.gasbackend.model.Comment;
 import com.gas.gasbackend.model.Skill;
 import com.gas.gasbackend.model.Slice;
 import com.gas.gasbackend.service.SliceService;
@@ -54,16 +53,6 @@ public class SliceController {
             @Parameter(description = "Slice ID") @PathVariable final String id,
             @RequestBody final Skill skill) {
         return sliceService.addSkillToSlice(id, skill)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @Operation(summary = "Add comment to slice")
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<Slice> addCommentToSlice(
-            @Parameter(description = "Slice ID") @PathVariable final String id,
-            @RequestBody final Comment comment) {
-        return sliceService.addCommentToSlice(id, comment)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

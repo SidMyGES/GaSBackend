@@ -1,6 +1,5 @@
 package com.gas.gasbackend.service;
 
-import com.gas.gasbackend.model.Comment;
 import com.gas.gasbackend.model.Skill;
 import com.gas.gasbackend.model.Slice;
 import com.gas.gasbackend.repository.SliceRepository;
@@ -60,20 +59,6 @@ public class SliceService {
     public Optional<Slice> addSkillToSlice(final String sliceId, final Skill skill) {
         return sliceRepository.findById(sliceId).map(slice -> {
             slice.getSkills().add(skill);
-            return sliceRepository.save(slice);
-        });
-    }
-
-    /**
-     * Adds a comment to a slice.
-     *
-     * @param sliceId Slice ID
-     * @param comment Comment to add
-     * @return Optional updated Slice
-     */
-    public Optional<Slice> addCommentToSlice(final String sliceId, final Comment comment) {
-        return sliceRepository.findById(sliceId).map(slice -> {
-            slice.getComments().add(comment);
             return sliceRepository.save(slice);
         });
     }

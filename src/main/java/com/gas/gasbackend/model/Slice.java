@@ -15,6 +15,7 @@ import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(name = "slices")
 @Schema(description = "Represents a sub-part ('Slice') of a project showcasing specific skills")
 public class Slice {
 
@@ -35,13 +36,12 @@ public class Slice {
     @Schema(description = "Skills demonstrated by this slice", requiredMode = Schema.RequiredMode.REQUIRED)
     private Set<Skill> skills = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "slice_id")
-    @Schema(description = "Comments left by users on this slice")
-    private Set<Comment> comments = new HashSet<>();
-
     @Schema(description = "Number of likes this slice received")
     private int likes;
+
+    @Schema(description = "The project this slice is part of")
+    @ManyToOne
+    private Project project;
 
     /**
      * Constructor for Slice with mandatory name.
@@ -61,14 +61,5 @@ public class Slice {
      */
     public void addSkills(final Skill... skills) {
         this.skills.addAll(Arrays.asList(skills));
-    }
-
-    /**
-     * Adds comments to the slice.
-     *
-     * @param comments comments to be added
-     */
-    public void addComments(final Comment... comments) {
-        this.comments.addAll(Arrays.asList(comments));
     }
 }

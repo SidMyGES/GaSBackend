@@ -3,6 +3,7 @@ package com.gas.gasbackend.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(name = "skills")
 @Schema(description = "Represents a particular skill possessed by a user or showcased in a slice/project")
 public class Skill {
 
