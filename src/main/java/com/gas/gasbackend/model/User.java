@@ -13,7 +13,6 @@ import java.util.Set;
 @Schema(description = "Represents a user in the Grab a Slice platform")
 public class User {
 
-    @Setter(AccessLevel.NONE)
     @Schema(description = "Unique identifier for the user",
             accessMode = Schema.AccessMode.READ_ONLY)
     private String ID;
@@ -43,7 +42,7 @@ public class User {
     private final Set<Project> projects;
 
     @Schema(description = "Number of likes received by the user")
-    private int likes; //to change
+    private int likes;
 
     @Schema(description = "Comments made under user's profile",
             accessMode = Schema.AccessMode.READ_ONLY)
