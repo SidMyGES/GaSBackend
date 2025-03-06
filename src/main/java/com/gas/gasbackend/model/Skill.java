@@ -1,31 +1,31 @@
 package com.gas.gasbackend.model;
 
+import java.util.UUID;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Data
-@Schema(description = "Represents a skill that a user have, a project requires, or a slice presents")
+@NoArgsConstructor
+@Schema(description = "Represents a particular skill possessed by a user or showcased in a slice/project")
 public class Skill {
 
+    @Id
     @Setter(AccessLevel.NONE)
-    @Schema(description = "Unique identifier for the skill",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private String ID;
+    @Schema(description = "Unique identifier for the skill", accessMode = Schema.AccessMode.READ_ONLY)
+    private String id;
 
-    @Schema(description = "The name of the skill",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    private final String name;
+    @Schema(description = "Name of the skill", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String name;
 
-    @Schema(description = "The shape associated with the skill for visual representation",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    private final String shapeName;
-
-    public Skill(final String name, final String shapeName) {
+    public Skill(final String name) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
-        this.shapeName = shapeName;
     }
 }

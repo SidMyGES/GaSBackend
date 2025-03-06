@@ -1,51 +1,69 @@
 package com.gas.gasbackend.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
+@Entity
 @Data
-@Schema(description = "Represents a project (pizza) that a user has worked on.")
+@NoArgsConstructor
+@Schema(description = "Represents a project created by users.")
 public class Project {
 
-    @Setter(AccessLevel.NONE)
-    @Schema(description = "Unique identifier for the project",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private String ID;
+    @Id
+    @Schema(description = "Unique identifier for the project", accessMode = Schema.AccessMode.READ_ONLY)
+    private String id;
 
-    @Schema(description = "Name of the project",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Name of the project", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @Schema(description = "Number of likes received on this project")
-    private int likes;
+    @Schema(description = "Description of the project")
+    private String description;
 
-    @Schema(description = "List of comments left on the project")
-    private final Set<Comment> comments;
+    @Schema(description = "Number of likes received by the project")
+    @ManyToMany
+    private Set<User> likedBy = new HashSet<>();
 
-    @Schema(description = "Skills (toppings) used in this project",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    private final Set<Skill> skillsUsed;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "project_id")
+    @Schema(description = "Comments left by users on this project")
+    private Set<Comment> comments = new HashSet<>();
 
-    @Schema(description = "Users who collaborated on this project",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    private final Set<User> collaborators;
+    @ManyToMany
+    @JoinTable(
+            name = "project_skills",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    @Schema(description = "Skills demonstrated in this project", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Set<Skill> skillsUsed = new HashSet<>();
 
-    @Schema(description = "Slices (mentorship offers/requests) associated with this project",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private final Set<Slice> slices;
+    @ManyToMany
+    @JoinTable(
+            name = "project_collaborators",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @Schema(description = "Users who collaborated on this project", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Set<User> collaborators = new HashSet<>();
 
-    public Project(final String name) {
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_id")
+    @Schema(description = "Slices associated with this project")
+    private Set<Slice> slices = new HashSet<>();
+
+    public Project(final String name, String description) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
-        this.comments = new HashSet<>();
-        this.skillsUsed = new HashSet<>();
-        this.collaborators = new HashSet<>();
-        this.slices = new HashSet<>();
+        this.description = description;
     }
 
     public void addComments(final Comment... comments) {
@@ -58,9 +76,5 @@ public class Project {
 
     public void addCollaborators(final User... collaborators){
         this.collaborators.addAll(Arrays.asList(collaborators));
-    }
-
-    public void addSlices(final Slice... slices) {
-        this.slices.addAll(Arrays.asList(slices));
     }
 }
