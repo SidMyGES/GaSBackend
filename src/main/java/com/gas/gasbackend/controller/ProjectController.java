@@ -1,5 +1,6 @@
 package com.gas.gasbackend.controller;
 
+import com.gas.gasbackend.dto.ProjectDTO;
 import com.gas.gasbackend.model.Comment;
 import com.gas.gasbackend.model.Project;
 import com.gas.gasbackend.model.Skill;
@@ -17,17 +18,17 @@ public class ProjectController {
     private ProjectService projectService;
 
     @GetMapping
-    public List<Project> getAllProjects() {
+    public List<ProjectDTO> getAllProjects() {
         return projectService.getAllProjects();
     }
 
     @GetMapping("/{id}")
-    public Project getProject(@RequestParam String id) {
+    public ProjectDTO getProject(@RequestParam String id) {
         return projectService.getProject(id);
     }
 
     @PostMapping
-    public Project createProject(@RequestBody Project project) {
+    public ProjectDTO createProject(@RequestBody Project project) {
         return projectService.createProject(project);
     }
 
@@ -37,16 +38,18 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public Project updateProject(@RequestParam String id,@RequestBody Project project) {
+    public ProjectDTO updateProject(@RequestParam String id,@RequestBody Project project) {
         return projectService.updateProject(id, project);
     }
 
     @GetMapping("/{id}/like")
     public void likeProject(String id) {
+        String userId = "1";
         projectService.likeProject(id, userId);
     }
     @DeleteMapping("/{id}/removeLike")
     public void removeLike(String id) {
+        String userId = "1";
         projectService.removeLike(id, userId);
     }
 
@@ -71,7 +74,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{id}/addSlice")
-    public void addSlice(@RequestParam String id,@RequestBody Slice slice) {
+    public void addSlice(@RequestParam String id,@RequestBody Slice slice) { //TODO avoir le DTO
         projectService.addSlice(id, slice);
     }
 
@@ -81,7 +84,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{id}/addComment")
-    public void addComment(@RequestParam String id,@RequestBody Comment comment) {
+    public void addComment(@RequestParam String id,@RequestBody Comment comment) { //TODO avoir le DTO
         projectService.addComment(id, comment);
     }
 
