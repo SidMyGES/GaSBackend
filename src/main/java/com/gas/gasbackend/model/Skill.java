@@ -1,10 +1,12 @@
 package com.gas.gasbackend.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 
+@Entity
 @Data
 @Schema(description = "Represents a skill that a user have, a project requires, or a slice presents")
 public class Skill {
