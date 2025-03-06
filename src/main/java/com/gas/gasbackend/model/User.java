@@ -1,75 +1,94 @@
 package com.gas.gasbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
+import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
+@NoArgsConstructor // Constructeur sans argument nécessaire pour JPA
+@Entity
+@Table(name = "users")
 @Schema(description = "Represents a user in the Grab a Slice platform")
 public class User {
 
-    @Setter(AccessLevel.NONE)
-    @Schema(description = "Unique identifier for the user",
-            accessMode = Schema.AccessMode.READ_ONLY)
+    @Id
+    @JsonProperty("ID")
+    @Schema(description = "Unique identifier for the user", accessMode = Schema.AccessMode.READ_ONLY)
     private String ID;
 
-    @Schema(description = "User's first name",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "User's first name", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @Schema(description = "User's last name",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "User's last name", requiredMode = Schema.RequiredMode.REQUIRED)
     private String lastName;
 
-    @Schema(description = "User's email address",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "User's email address", requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
 
-    @Schema(description = "User's password",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "User's password", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
-    @Schema(description = "Set of skills the user has",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private final Set<Skill> skills;
+    // Relation Many-to-Many avec Skill
+    @ManyToMany
+    @JoinTable(
+            name = "user_skills",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    @Schema(description = "Set of skills the user has", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Skill> skills = new HashSet<>();
 
-    @Schema(description = "Projects the user is working on or has created",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private final Set<Project> projects;
+    // Relation bidirectionnelle Many-to-Many avec Project
+    // Ici, le côté inverse est défini par "mappedBy" qui fait référence au champ "collaborators" de la classe Project
+    @ManyToMany
+    @JoinTable(
+            name = "user_project",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    @Schema(description = "Projects in which the user participates", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Project> projects = new HashSet<>();
 
     @Schema(description = "Number of likes received by the user")
-    private int likes; //to change
+    private int likes;
 
-    @Schema(description = "Comments made under user's profile",
-            accessMode = Schema.AccessMode.READ_ONLY)
-    private final Set<Comment> comments;
+    // Relation One-to-Many avec Comment (le champ "writer" dans Comment est le propriétaire)
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Schema(description = "Comments made by the user", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Comment> comments = new HashSet<>();
 
-    public User(final String name, final String lastName, final String email, final String password) {
+    // Constructeur avec arguments
+    public User(String name, String lastName, String email, String password) {
+        this.ID = UUID.randomUUID().toString();
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.skills = new HashSet<>();
-        this.projects = new HashSet<>();
-        this.likes = 0;
-        this.comments = new HashSet<>();
     }
 
-    public void setSkills(final Skill... skills){
+    // Méthodes utilitaires
+    public void addSkills(Skill... skills) {
         this.skills.addAll(Arrays.asList(skills));
     }
 
-    public void setProjects(final Project... projects) {
-        this.projects.addAll(Arrays.asList(projects));
+    // Méthode qui gère la relation bidirectionnelle
+    public void addProject(Project project) {
+        this.projects.add(project);
+        project.getCollaborators().add(this);
     }
 
-    public void setComments(final Comment... comments) {
+    public void addComments(Comment... comments) {
         this.comments.addAll(Arrays.asList(comments));
     }
-}
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(ID);
+    }
+
+}
