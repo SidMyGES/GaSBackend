@@ -1,24 +1,25 @@
 package com.gas.gasbackend.model;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.*;
 
 @Entity
 @Table(name = "app_user")
+@Data
+@NoArgsConstructor
 @Schema(description = "Represents a user in the Grab a Slice platform")
 public class User {
 
     @Id
-    @Schema(description = "Unique identifier for the user", accessMode = Schema.AccessMode.READ_ONLY)
+    @Setter(AccessLevel.NONE)
+    @Schema(description = "Unique identifier for the user",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private String id;
 
     @Schema(description = "User's first name", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -33,103 +34,62 @@ public class User {
     @Schema(description = "User's password", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Schema(description = "Comments made by the user", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Comment> comments = new HashSet<>();
+
     @ManyToMany
     @JoinTable(
-            name = "app_user_skills",
-            joinColumns = @JoinColumn(name = "app_user_id"),
-            inverseJoinColumns = @JoinColumn(name = "skills_id")
+            name = "user_skills",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     @Schema(description = "Set of skills the user has", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Skill> skills = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
-            name = "app_user_projects",
-            joinColumns = @JoinColumn(name = "app_user_id"),
+            name = "user_projects",
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id")
     )
     @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Project> projects = new HashSet<>();
 
-    // Constructors
-    public User() {
-        this.skills = new HashSet<>();
-        this.projects = new HashSet<>();
-    }
+    @Schema(description = "Number of likes received by the user")
+    private int likes;
 
-    public User(String name, String lastName, String email, String password) {
+    public User(final String name, final String lastName, final String email, final String password) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.skills = new HashSet<>();
-        this.projects = new HashSet<>();
+        this.likes = 0;
     }
 
-    // Getters
-    public String getId() {
-        return id;
-    }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Set<Skill> getSkills() {
-        return skills;
-    }
-
-    public Set<Project> getProjects() {
-        return projects;
-    }
-
-    // Setters
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setSkills(Set<Skill> skills) {
-        this.skills = skills;
-    }
-
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
-    }
-
-    // Utility methods
-    public void addSkill(Skill... skills) {
+    public void addSkills(Skill... skills) {
         this.skills.addAll(Arrays.asList(skills));
     }
 
-    public void addProject(Project... projects) {
+    public void addProjects(final Project... projects) {
         this.projects.addAll(Arrays.asList(projects));
     }
+
+    // Méthode qui gère la relation bidirectionnelle
+    public void setProject(Project project) {
+        this.projects.add(project);
+        project.getCollaborators().add(this);
+    }
+
+    public void addComments(Comment... comments) {
+        this.comments.addAll(Arrays.asList(comments));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }
