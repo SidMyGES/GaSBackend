@@ -1,5 +1,7 @@
 package com.gas.gasbackend.model;
 
+import com.gas.gasbackend.dto.user.UserCreateDTO;
+import com.gas.gasbackend.dto.user.UserDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -51,7 +53,6 @@ public class User {
     @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Project> projects = new HashSet<>();
 
-
     @Schema(description = "Number of likes received by the user")
     private int likes;
 
@@ -91,7 +92,6 @@ public class User {
         this.comments.addAll(Arrays.asList(comments));
     }
 
-
     @Override
     public int hashCode() {
         return Objects.hash(id);
@@ -104,4 +104,21 @@ public class User {
         return Objects.equals(id, user.getId());
     }
 
+    public static UserDTO mapUserToDto(final User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getName(),
+                user.getLastName(),
+                user.getEmail()
+        );
+    }
+
+    private static User mapDtoToUser(final UserCreateDTO userDTO){
+        return new User(
+                userDTO.getFirstName(),
+                userDTO.getLastName(),
+                userDTO.getEmail(),
+                ""
+        );
+    }
 }

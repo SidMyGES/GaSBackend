@@ -93,5 +93,4 @@ public class Project {
         if (!(o instanceof User user)) return false;
         return Objects.equals(id, user.getId());
     }
-
 }

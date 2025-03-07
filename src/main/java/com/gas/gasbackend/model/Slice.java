@@ -1,5 +1,6 @@
 package com.gas.gasbackend.model;
 
+import com.gas.gasbackend.dto.SliceDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -46,9 +47,28 @@ public class Slice {
      *
      * @param name the name of the slice
      */
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
+    @ManyToOne
+    @JoinColumn(name = "target_user_id", nullable = false)
+    private User sourceUser;
+    @ManyToOne
+    @JoinColumn(name = "source_user_id", nullable = false)
+    private User targetUser;
+
     public Slice(final String name) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
+        this.likes = 0;
+    }
+
+    public Slice(final String name, final Project project, final User sourceUser, final User targerUser) {
+        this.id = UUID.randomUUID().toString();
+        this.name = name;
+        this.project = project;
+        this.targetUser = targerUser;
+        this.sourceUser = sourceUser;
         this.likes = 0;
     }
 
@@ -81,5 +101,16 @@ public class Slice {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
         return Objects.equals(id, user.getId());
+    }
+
+    public static SliceDTO mapSliceToDto(final Slice slice){
+        return new SliceDTO(
+                slice.getId(),
+                slice.getName(),
+                slice.getSkills(),
+                User.mapUserToDto(slice.getSourceUser()),
+                User.mapUserToDto(slice.getTargetUser()),
+                Project.mapProjectToDto(slice.getProject())
+        );
     }
 }
