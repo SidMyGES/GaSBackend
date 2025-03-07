@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Table(name = "projects")
 @NoArgsConstructor
 @Schema(description = "Represents a project created by users.")
 public class Project {
@@ -29,6 +30,11 @@ public class Project {
     private String description;
 
     @Schema(description = "Number of likes received by the project")
+    @JoinTable(
+            name = "project_likes",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     @ManyToMany
     private Set<User> likedBy = new HashSet<>();
 
@@ -77,4 +83,9 @@ public class Project {
     public void addCollaborators(final User... collaborators){
         this.collaborators.addAll(Arrays.asList(collaborators));
     }
+    public void addSlices(final Slice... slices) {
+        this.slices.addAll(Arrays.asList(slices));
+    }
+
+
 }

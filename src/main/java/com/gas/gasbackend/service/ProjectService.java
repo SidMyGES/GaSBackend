@@ -18,7 +18,8 @@ public class ProjectService {
     }
 
     public ProjectDTO getProject(String id) {
-        return ProjectDTO.fromEntity(projectRepository.findById(id).orElse(null));
+        Project project = projectRepository.findById(id).orElse(null);
+        return project != null ? ProjectDTO.fromEntity(project) : null;
     }
 
     public ProjectDTO createProject(ProjectDTO project) {

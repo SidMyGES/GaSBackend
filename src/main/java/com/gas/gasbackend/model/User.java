@@ -59,8 +59,18 @@ public class User {
     @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Project> projects = new HashSet<>();
 
+
     @Schema(description = "Number of likes received by the user")
     private int likes;
+
+    @Schema(description = "likes given to projects")
+    @ManyToMany
+    @JoinTable(
+            name = "project_likes",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<Project> likedProjects = new HashSet<>();
 
     public User(final String name, final String lastName, final String email, final String password) {
         this.id = UUID.randomUUID().toString();

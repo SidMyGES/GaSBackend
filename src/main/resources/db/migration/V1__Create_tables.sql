@@ -1,145 +1,175 @@
-CREATE TABLE users (
-                       id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
-                       name VARCHAR(255) NOT NULL,
-                       last_name VARCHAR(255) NOT NULL,
-                       email VARCHAR(255) NOT NULL UNIQUE,
-                       password VARCHAR(255) NOT NULL,
-                       likes INT DEFAULT 0
-);
-
-CREATE TABLE skills (
-                        id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
-                        name VARCHAR(255) NOT NULL UNIQUE,
-                        shape_name VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE projects (
-                          id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
+-- Création de la table des utilisateurs
+CREATE TABLE app_user (
+                          id VARCHAR(255) PRIMARY KEY,
                           name VARCHAR(255) NOT NULL,
+                          last_name VARCHAR(255) NOT NULL,
+                          email VARCHAR(255) NOT NULL UNIQUE,
+                          password VARCHAR(255) NOT NULL,
                           likes INT DEFAULT 0
 );
 
-CREATE TABLE slices (
-                        id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
-                        name VARCHAR(255) NOT NULL
+-- Création de la table des projets
+CREATE TABLE projects (
+                          id VARCHAR(255) PRIMARY KEY,
+                          name VARCHAR(255) NOT NULL,
+                          description TEXT
 );
 
-CREATE TABLE comments (
-                          id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
-                          parent_id UUID,
-                          writer_id UUID NOT NULL,
-                          content TEXT NOT NULL,
-                          FOREIGN KEY (writer_id) REFERENCES users(id),
-                          FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+-- Table d'association pour les likes des projets
+CREATE TABLE project_likes (
+                               project_id VARCHAR(255),
+                               user_id VARCHAR(255),
+                               PRIMARY KEY (project_id, user_id),
+                               FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                               FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE
 );
 
-CREATE TABLE user_skills (
-                             user_id UUID NOT NULL,
-                             skill_id UUID NOT NULL,
-                             PRIMARY KEY (user_id, skill_id),
-                             FOREIGN KEY (user_id) REFERENCES users(id),
-                             FOREIGN KEY (skill_id) REFERENCES skills(id)
+-- Table d'association pour les collaborateurs des projets
+CREATE TABLE project_collaborators (
+                                       project_id VARCHAR(255),
+                                       user_id VARCHAR(255),
+                                       PRIMARY KEY (project_id, user_id),
+                                       FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                                       FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE
 );
 
-CREATE TABLE user_projects (
-                               user_id UUID NOT NULL,
-                               project_id UUID NOT NULL,
-                               PRIMARY KEY (user_id, project_id),
-                               FOREIGN KEY (user_id) REFERENCES users(id),
-                               FOREIGN KEY (project_id) REFERENCES projects(id)
+-- Création de la table des compétences
+CREATE TABLE skills (
+                        id VARCHAR(255) PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL UNIQUE
 );
 
+-- Table d'association entre projets et compétences utilisées
 CREATE TABLE project_skills (
-                                project_id UUID NOT NULL,
-                                skill_id UUID NOT NULL,
+                                project_id VARCHAR(255),
+                                skill_id VARCHAR(255),
                                 PRIMARY KEY (project_id, skill_id),
-                                FOREIGN KEY (project_id) REFERENCES projects(id),
-                                FOREIGN KEY (skill_id) REFERENCES skills(id)
+                                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                                FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 );
 
-CREATE TABLE project_slices (
-                                project_id UUID NOT NULL,
-                                slice_id UUID NOT NULL,
-                                PRIMARY KEY (project_id, slice_id),
-                                FOREIGN KEY (project_id) REFERENCES projects(id),
-                                FOREIGN KEY (slice_id) REFERENCES slices(id)
+-- Table d'association entre utilisateurs et compétences
+CREATE TABLE user_skills (
+                             user_id VARCHAR(255),
+                             skill_id VARCHAR(255),
+                             PRIMARY KEY (user_id, skill_id),
+                             FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE,
+                             FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 );
 
+-- Table d'association entre utilisateurs et projets
+CREATE TABLE user_projects (
+                               user_id VARCHAR(255),
+                               project_id VARCHAR(255),
+                               PRIMARY KEY (user_id, project_id),
+                               FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE,
+                               FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
+
+-- Création de la table des "slices"
+CREATE TABLE slices (
+                        id VARCHAR(255) PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        project_id VARCHAR(255),
+                        likes INT DEFAULT 0,
+                        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
+
+-- Table d'association entre slices et compétences
 CREATE TABLE slice_skills (
-                              slice_id UUID NOT NULL,
-                              skill_id UUID NOT NULL,
+                              slice_id VARCHAR(255),
+                              skill_id VARCHAR(255),
                               PRIMARY KEY (slice_id, skill_id),
-                              FOREIGN KEY (slice_id) REFERENCES slices(id),
-                              FOREIGN KEY (skill_id) REFERENCES skills(id)
+                              FOREIGN KEY (slice_id) REFERENCES slices(id) ON DELETE CASCADE,
+                              FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 );
 
-CREATE TABLE project_comments (
-                                  project_id UUID NOT NULL,
-                                  comment_id UUID NOT NULL,
-                                  PRIMARY KEY (project_id, comment_id),
-                                  FOREIGN KEY (project_id) REFERENCES projects(id),
-                                  FOREIGN KEY (comment_id) REFERENCES comments(id)
+-- Création de la table des commentaires
+CREATE TABLE comments (
+                          id VARCHAR(255) PRIMARY KEY,
+                          content TEXT NOT NULL,
+                          writer_id VARCHAR(255) NOT NULL,
+                          parent_id VARCHAR(255),
+                          project_id VARCHAR(255),
+                          slice_id VARCHAR(255),
+                          FOREIGN KEY (writer_id) REFERENCES app_user(id) ON DELETE CASCADE,
+                          FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE,
+                          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                          FOREIGN KEY (slice_id) REFERENCES slices(id) ON DELETE CASCADE
 );
 
-CREATE TABLE slice_comments (
-                                slice_id UUID NOT NULL,
-                                comment_id UUID NOT NULL,
-                                PRIMARY KEY (slice_id, comment_id),
-                                FOREIGN KEY (slice_id) REFERENCES slices(id),
-                                FOREIGN KEY (comment_id) REFERENCES comments(id)
-);
+INSERT INTO app_user (id, name, last_name, email, password, likes) VALUES
+                                                                       ('user1', 'Alice', 'Dupont', 'alice.dupont@example.com', 'password123', 5),
+                                                                       ('user2', 'Bob', 'Martin', 'bob.martin@example.com', 'securepass', 10),
+                                                                       ('user3', 'Charlie', 'Lemoine', 'charlie.lemoine@example.com', 'hashedpass', 3);
 
--- Insert sample users
-INSERT INTO users (id, name, last_name, email, password, likes) VALUES
-                                                                    (RANDOM_UUID(), 'Alice', 'Doe', 'alice@example.com', 'password123', 10),
-                                                                    (RANDOM_UUID(), 'Bob', 'Smith', 'bob@example.com', 'password123', 5);
+INSERT INTO projects (id, name, description) VALUES
+                                                 ('proj1', 'Application de gestion des tâches', 'Une application pour gérer les tâches quotidiennes.'),
+                                                 ('proj2', 'Site e-commerce', 'Une boutique en ligne avec paiement sécurisé.'),
+                                                 ('proj3', 'Portfolio en ligne', 'Un portfolio interactif pour les développeurs.');
 
--- Insert sample skills
-INSERT INTO skills (id, name, shape_name) VALUES
-                                              (RANDOM_UUID(), 'Java', 'Circle'),
-                                              (RANDOM_UUID(), 'Spring Boot', 'Square');
 
--- Insert sample projects
-INSERT INTO projects (id, name, likes) VALUES
-                                           (RANDOM_UUID(), 'E-commerce Website', 15),
-                                           (RANDOM_UUID(), 'Chat Application', 20);
+INSERT INTO project_likes (project_id, user_id) VALUES
+                                                    ('proj1', 'user1'),
+                                                    ('proj1', 'user2'),
+                                                    ('proj2', 'user3'),
+                                                    ('proj3', 'user1');
 
--- Insert sample slices
-INSERT INTO slices (id, name) VALUES
-                                  (RANDOM_UUID(), 'Backend Development'),
-                                  (RANDOM_UUID(), 'UI/UX Design');
 
--- Insert sample comments
-INSERT INTO comments (id, parent_id, writer_id, content) VALUES
-                                                             (RANDOM_UUID(), NULL, (SELECT id FROM users WHERE email='alice@example.com'), 'Great project!'),
-                                                             (RANDOM_UUID(), NULL, (SELECT id FROM users WHERE email='bob@example.com'), 'Nice work!');
+INSERT INTO project_collaborators (project_id, user_id) VALUES
+                                                            ('proj1', 'user2'),
+                                                            ('proj2', 'user3'),
+                                                            ('proj3', 'user1'),
+                                                            ('proj3', 'user2');
 
--- Associate users with skills
-INSERT INTO user_skills (user_id, skill_id) VALUES
-                                                ((SELECT id FROM users WHERE email='alice@example.com'), (SELECT id FROM skills WHERE name='Java')),
-                                                ((SELECT id FROM users WHERE email='bob@example.com'), (SELECT id FROM skills WHERE name='Spring Boot'));
 
--- Associate users with projects
-INSERT INTO user_projects (user_id, project_id) VALUES
-                                                    ((SELECT id FROM users WHERE email='alice@example.com'), (SELECT id FROM projects WHERE name='E-commerce Website')),
-                                                    ((SELECT id FROM users WHERE email='bob@example.com'), (SELECT id FROM projects WHERE name='Chat Application'));
+INSERT INTO skills (id, name) VALUES
+                                  ('skill1', 'Java'),
+                                  ('skill2', 'Spring Boot'),
+                                  ('skill3', 'React'),
+                                  ('skill4', 'Python'),
+                                  ('skill5', 'Django');
 
--- Associate projects with skills
+
 INSERT INTO project_skills (project_id, skill_id) VALUES
-                                                      ((SELECT id FROM projects WHERE name='E-commerce Website'), (SELECT id FROM skills WHERE name='Java')),
-                                                      ((SELECT id FROM projects WHERE name='Chat Application'), (SELECT id FROM skills WHERE name='Spring Boot'));
+                                                      ('proj1', 'skill1'),
+                                                      ('proj1', 'skill2'),
+                                                      ('proj2', 'skill3'),
+                                                      ('proj2', 'skill4'),
+                                                      ('proj3', 'skill5');
 
--- Associate projects with slices
-INSERT INTO project_slices (project_id, slice_id) VALUES
-                                                      ((SELECT id FROM projects WHERE name='E-commerce Website'), (SELECT id FROM slices WHERE name='Backend Development')),
-                                                      ((SELECT id FROM projects WHERE name='Chat Application'), (SELECT id FROM slices WHERE name='UI/UX Design'));
 
--- Associate slices with skills
+INSERT INTO user_skills (user_id, skill_id) VALUES
+                                                ('user1', 'skill1'),
+                                                ('user1', 'skill3'),
+                                                ('user2', 'skill2'),
+                                                ('user2', 'skill4'),
+                                                ('user3', 'skill5');
+
+
+INSERT INTO user_projects (user_id, project_id) VALUES
+                                                    ('user1', 'proj1'),
+                                                    ('user2', 'proj2'),
+                                                    ('user3', 'proj3');
+
+
+
+INSERT INTO slices (id, name, project_id, likes) VALUES
+                                                     ('slice1', 'Frontend', 'proj1', 15),
+                                                     ('slice2', 'Backend', 'proj1', 10),
+                                                     ('slice3', 'Base de données', 'proj2', 8);
+
+
 INSERT INTO slice_skills (slice_id, skill_id) VALUES
-                                                  ((SELECT id FROM slices WHERE name='Backend Development'), (SELECT id FROM skills WHERE name='Java')),
-                                                  ((SELECT id FROM slices WHERE name='UI/UX Design'), (SELECT id FROM skills WHERE name='Spring Boot'));
+                                                  ('slice1', 'skill3'),
+                                                  ('slice2', 'skill1'),
+                                                  ('slice3', 'skill4');
 
--- Associate comments with projects
-INSERT INTO project_comments (project_id, comment_id) VALUES
-                                                          ((SELECT id FROM projects WHERE name='E-commerce Website'), (SELECT id FROM comments WHERE content='Great project!')),
-                                                          ((SELECT id FROM projects WHERE name='Chat Application'), (SELECT id FROM comments WHERE content='Nice work!'));
+
+
+INSERT INTO comments (id, content, writer_id, parent_id, project_id, slice_id) VALUES
+                                                                                   ('comment1', 'Super projet !', 'user1', NULL, 'proj1', NULL),
+                                                                                   ('comment2', 'J’aime beaucoup l’interface.', 'user2', 'comment1', 'proj1', NULL),
+                                                                                   ('comment3', 'Bon choix de technologies.', 'user3', NULL, 'proj2', 'slice3');
+
+

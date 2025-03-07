@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Table(name = "slices")
 @NoArgsConstructor
 @Schema(description = "Represents a sub-part ('Slice') of a project showcasing specific skills")
 public class Slice {
