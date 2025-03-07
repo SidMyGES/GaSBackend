@@ -1,17 +1,12 @@
 package com.gas.gasbackend.model;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
+import java.util.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.*;
 
 @Entity
 @Data
@@ -70,16 +65,16 @@ public class Project {
     public Project(final String name) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
+        this.description = description;
         this.likes = 0;
     }
 
-    // Méthodes utilitaires
-    public void addComment(final Comment comment) {
-        this.comments.add(comment);
+    public void addComments(final Comment... comments) {
+        this.comments.addAll(Arrays.asList(comments));
     }
 
-    public void addSkillUsed(final Skill skill) {
-        this.skillsUsed.add(skill);
+    public void addSkillsUsed(final Skill... skills) {
+        this.skillsUsed.addAll(Arrays.asList(skills));
     }
 
     // Méthode qui gère la relation bidirectionnelle

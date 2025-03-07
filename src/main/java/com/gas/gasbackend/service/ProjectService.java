@@ -100,7 +100,7 @@ public class ProjectService {
     public void addSlice(String id, Slice slice) {
         Project project = projectRepository.findById(id).orElse(null);
         if (project != null) {
-//            project.getSlices().add(slice); //TODO avoir le slicerepo pour trouver le slice
+            project.getSlices().add(slice); //TODO avoir le slicerepo pour trouver le slice
             projectRepository.save(project);
         }
     }
@@ -116,7 +116,7 @@ public class ProjectService {
     public void addComment(String id, Comment comment) {
         Project project = projectRepository.findById(id).orElse(null);
         if (project != null) {
-//            project.getComments().add(comment); //TODO avoir le commentrepo pour trouver le comment
+            project.getComments().add(comment); //TODO avoir le commentrepo pour trouver le comment
             projectRepository.save(project);
         }
     }

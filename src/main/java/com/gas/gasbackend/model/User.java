@@ -1,5 +1,6 @@
 package com.gas.gasbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -34,6 +35,7 @@ public class User {
     @Schema(description = "User's password", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
+    //@JsonManagedReference
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
     @Schema(description = "Comments written by the user", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Comment> comments = new HashSet<>();

@@ -73,7 +73,7 @@ public class SliceService {
      */
     public Optional<Slice> addCommentToSlice(final String sliceId, final Comment comment) {
         return sliceRepository.findById(sliceId).map(slice -> {
-//            slice.getComments().add(comment);
+            //slice.getComments().add(comment);
             return sliceRepository.save(slice);
         });
     }
