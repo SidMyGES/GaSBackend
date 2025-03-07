@@ -9,6 +9,7 @@ import lombok.Data;
 @Schema(description = "DTO for receiving user information from the front")
 public class UserCreateDTO {
     private String firstName;
-    private String LastName;
+    private String lastName;
     private String email;
+    private String password;
 }

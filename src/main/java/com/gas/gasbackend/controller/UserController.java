@@ -7,6 +7,7 @@ import java.util.Set;
 import com.gas.gasbackend.dto.SliceDTO;
 import com.gas.gasbackend.dto.user.UserCreateDTO;
 import com.gas.gasbackend.model.Slice;
+import com.gas.gasbackend.model.User;
 import com.gas.gasbackend.service.SliceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,8 @@ public class UserController {
     @PostMapping
     @Operation(summary = "Add a user", description = "Sets a new random ID to the user received and adds it to the database")
     public void createUser(@RequestBody final UserCreateDTO userDTO) {
-        userService.addUser(userDTO);
+        User user = User.mapDtoToUser(userDTO);
+        userService.createUser(user);
     }
 
     @GetMapping
@@ -65,13 +67,13 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a user", description = "Deletes a user using its id")
-    public void deleteUser(final String userID){
+    public void deleteUser(@PathVariable("id") final String userID) {
         userService.deleteUser(userID);
     }
 
-    @Operation(summary = "Retrieves slices targeted to this user")
     @GetMapping("/slices/{targetUserId}")
-    public ResponseEntity<List<SliceDTO>> getSlicesByTagretId(@PathVariable final String targetUserId){
+    @Operation(summary = "Retrieves slices targeted to this user")
+    public ResponseEntity<List<SliceDTO>> getSlicesByTargetId(@PathVariable final String targetUserId){
         return ResponseEntity.ok(sliceService.getSlicesByTargetUserId(targetUserId));
     }
 
