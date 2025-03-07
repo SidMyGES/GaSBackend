@@ -1,6 +1,7 @@
 package com.gas.gasbackend.service;
 
-import com.gas.gasbackend.dto.UserDTO;
+import com.gas.gasbackend.dto.user.UserCreateDTO;
+import com.gas.gasbackend.dto.user.UserDTO;
 import com.gas.gasbackend.model.User;
 import com.gas.gasbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void addUser(final UserDTO userDTO) {
+    public void addUser(final UserCreateDTO userDTO) {
         final User user = mapDtoToUser(userDTO);
         userRepository.save(user);
     }
@@ -54,7 +55,7 @@ public class UserService {
         );
     }
 
-    private User mapDtoToUser(final UserDTO userDTO){
+    private User mapDtoToUser(final UserCreateDTO userDTO){
         return new User(
                 userDTO.getFirstName(),
                 userDTO.getLastName(),
