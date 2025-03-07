@@ -2,18 +2,19 @@ package com.gas.gasbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "comments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "Represents user comments left under: other users, projects, or slices")
 public class Comment {
@@ -48,19 +49,6 @@ public class Comment {
     @SuppressWarnings("unused")
     public String getParentId() {
         return parent != null ? parent.getId() : null;
-    }
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.getId());
     }
 }
 

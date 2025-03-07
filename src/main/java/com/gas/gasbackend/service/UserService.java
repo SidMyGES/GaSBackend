@@ -1,66 +1,129 @@
 package com.gas.gasbackend.service;
 
-import com.gas.gasbackend.dto.user.UserCreateDTO;
 import com.gas.gasbackend.dto.user.UserDTO;
 import com.gas.gasbackend.model.User;
 import com.gas.gasbackend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserService(final UserRepository userRepository){
+    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public void addUser(final UserCreateDTO userDTO) {
-        final User user = mapDtoToUser(userDTO);
-        userRepository.save(user);
+    /**
+     * Récupère tous les utilisateurs.
+     *
+     * @return Liste de tous les utilisateurs.
+     */
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    public void deleteUser(final String userID) {
-        userRepository.findById(userID).ifPresent(userRepository::delete);
+    /**
+     * Récupère un utilisateur par son identifiant.
+     *
+     * @param id Identifiant de l'utilisateur.
+     * @return Optional contenant l'utilisateur si trouvé.
+     */
+    public Optional<User> getUserById(final String id) {
+        return userRepository.findById(id);
     }
 
-    public UserDTO getUserByID(final String userID) {
-        final User user = userRepository.findById(userID).orElse(null);
-        assert user != null;
-        return mapUserToDto(user);
+    /**
+     * Récupère un utilisateur par son email.
+     *
+     * @param email Email de l'utilisateur.
+     * @return Optional contenant l'utilisateur si trouvé.
+     */
+    public Optional<User> getUserByEmail(final String email) {
+        return userRepository.findByEmail(email);
     }
 
+    /**
+     * Crée un nouvel utilisateur en chiffrant son mot de passe.
+     *
+     * @param user Utilisateur à créer.
+     * @return Utilisateur créé.
+     */
+    public User createUser(final User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+
+    /**
+     * Met à jour un utilisateur existant.
+     *
+     * @param id Identifiant de l'utilisateur.
+     * @param updatedUser Données mises à jour de l'utilisateur.
+     * @return Optional contenant l'utilisateur mis à jour ou vide s'il n'est pas trouvé.
+     */
+    public Optional<User> updateUser(final String id, final User updatedUser) {
+        return userRepository.findById(id).map(existingUser -> {
+            existingUser.setName(updatedUser.getName());
+            existingUser.setLastName(updatedUser.getLastName());
+            existingUser.setEmail(updatedUser.getEmail());
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
+            existingUser.setLikes(updatedUser.getLikes());
+            return userRepository.save(existingUser);
+        });
+    }
+
+    /**
+     * Supprime un utilisateur par son identifiant.
+     *
+     * @param id Identifiant de l'utilisateur.
+     */
+    public void deleteUser(final String id) {
+        userRepository.deleteById(id);
+    }
+
+    // ================== Méthodes pour le mapping DTO ==================
+
+    /**
+     * Récupère tous les utilisateurs sous forme de DTO.
+     *
+     * @return Ensemble de UserDTO.
+     */
     public Set<UserDTO> getAllUserDTOs() {
-        final List<UserDTO> userDTOs = userRepository.findAll().stream().map(UserService::mapUserToDto).toList();
-        return new HashSet<>(userDTOs);
+        return getAllUsers().stream()
+                .map(User::mapUserToDto)
+                .collect(Collectors.toSet());
     }
 
-    public Set<UserDTO> getUsersDTOsBySkill(List<String> skillIds) {
-        final List<UserDTO> userDTOs = userRepository.findBySkills(skillIds).stream().map(UserService::mapUserToDto).toList();
-        return new HashSet<>(userDTOs);
+    /**
+     * Récupère un utilisateur par son identifiant et le transforme en DTO.
+     *
+     * @param id Identifiant de l'utilisateur.
+     * @return UserDTO correspondant ou null si non trouvé.
+     */
+    public UserDTO getUserByID(final String id) {
+        return getUserById(id)
+                .map(User::mapUserToDto)
+                .orElse(null);
     }
 
-    private static UserDTO mapUserToDto(final User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getName(),
-                user.getLastName(),
-                user.getEmail()
-        );
-    }
-
-    private User mapDtoToUser(final UserCreateDTO userDTO){
-        return new User(
-                userDTO.getFirstName(),
-                userDTO.getLastName(),
-                userDTO.getEmail(),
-                ""
-        );
+    /**
+     * Récupère les utilisateurs possédant au moins une des compétences demandées.
+     *
+     * @param skillIds Liste des identifiants de compétences.
+     * @return Ensemble de UserDTO correspondant.
+     */
+    public Set<UserDTO> getUsersDTOsBySkill(final List<String> skillIds) {
+        List<User> users = userRepository.findBySkills(skillIds);
+        return users.stream()
+                .map(User::mapUserToDto)
+                .collect(Collectors.toSet());
     }
 }

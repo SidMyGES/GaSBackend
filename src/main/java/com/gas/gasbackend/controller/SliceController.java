@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/slices")
+@RequestMapping("/api/slices")
 public class SliceController {
 
     private final SliceService sliceService;

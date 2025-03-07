@@ -1,6 +1,5 @@
 package com.gas.gasbackend.model;
 
-import com.gas.gasbackend.dto.ProjectDTO;
 import com.gas.gasbackend.dto.SliceDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -9,11 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "slices")
 @NoArgsConstructor
 @Schema(description = "Represents a sub-part ('Slice') of a project showcasing specific skills")
 public class Slice {
@@ -35,10 +36,10 @@ public class Slice {
     @Schema(description = "Skills demonstrated by this slice", requiredMode = Schema.RequiredMode.REQUIRED)
     private Set<Skill> skills = new HashSet<>();
 
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "slice_id")
-//    @Schema(description = "Comments left by users on this slice")
-//    private Set<Comment> comments = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "slice_id")
+    @Schema(description = "Comments left by users on this slice")
+    private Set<Comment> comments = new HashSet<>();
 
     @Schema(description = "Number of likes this slice received")
     private int likes;
@@ -82,26 +83,13 @@ public class Slice {
         this.skills.addAll(Arrays.asList(skills));
     }
 
-//    /**
-//     * Adds comments to the slice.
-//     *
-//     * @param comments comments to be added
-//     */
-//    public void addComments(final Comment... comments) {
-//        this.comments.addAll(Arrays.asList(comments));
-//    }
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.getId());
+    /**
+     * Adds comments to the slice.
+     *
+     * @param comments comments to be added
+     */
+    public void addComments(final Comment... comments) {
+        this.comments.addAll(Arrays.asList(comments));
     }
 
     public static SliceDTO mapSliceToDto(final Slice slice){
@@ -111,7 +99,7 @@ public class Slice {
                 slice.getSkills(),
                 User.mapUserToDto(slice.getSourceUser()),
                 User.mapUserToDto(slice.getTargetUser()),
-                ProjectDTO.fromEntity(slice.getProject())
+                Project.mapProjectToDto(slice.getProject())
         );
     }
 }
