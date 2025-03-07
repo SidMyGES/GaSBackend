@@ -11,11 +11,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
-@NoArgsConstructor  // Constructeur sans argument pour JPA
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
 @Entity
+@Data
 @Table(name = "skills")
-@Schema(description = "Represents a skill that a user have, a project requires, or a slice presents")
+@NoArgsConstructor
+@Schema(description = "Represents a particular skill possessed by a user or showcased in a slice/project")
 public class Skill {
 
     @Id
@@ -25,14 +30,23 @@ public class Skill {
     @Schema(description = "Name of the skill", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @Schema(description = "The shape associated with the skill for visual representation",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    private String shapeName;
-
     public Skill(String name, String shapeName) {
         // Génération automatique de l'ID
         this.id = java.util.UUID.randomUUID().toString();
         this.name = name;
-        this.shapeName = shapeName;
+    }
+
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.getId());
     }
 }

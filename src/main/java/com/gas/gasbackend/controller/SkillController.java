@@ -48,8 +48,7 @@ public class SkillController {
         }
         Skill skill = skillOpt.get();
         skill.setName(updatedSkill.getName());
-        skill.setShapeName(updatedSkill.getShapeName());
-        Skill savedSkill = skillRepository.save(skill);
+         Skill savedSkill = skillRepository.save(skill);
         return ResponseEntity.ok(savedSkill);
     }
 

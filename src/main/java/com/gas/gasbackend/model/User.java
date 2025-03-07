@@ -47,17 +47,22 @@ public class User {
     @Schema(description = "Set of skills the user has", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Skill> skills = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_projects",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id")
-    )
+    @ManyToMany(mappedBy = "collaborators")
     @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Project> projects = new HashSet<>();
 
+
     @Schema(description = "Number of likes received by the user")
     private int likes;
+
+    @Schema(description = "likes given to projects")
+    @ManyToMany
+    @JoinTable(
+            name = "project_likes",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<Project> likedProjects = new HashSet<>();
 
     public User(final String name, final String lastName, final String email, final String password) {
         this.id = UUID.randomUUID().toString();
@@ -68,8 +73,7 @@ public class User {
         this.likes = 0;
     }
 
-
-    public void addSkills(Skill... skills) {
+    public void setSkills(final Skill... skills) {
         this.skills.addAll(Arrays.asList(skills));
     }
 
@@ -87,9 +91,17 @@ public class User {
         this.comments.addAll(Arrays.asList(comments));
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(id, user.getId());
     }
 
 }
