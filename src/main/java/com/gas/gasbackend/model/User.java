@@ -7,10 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "app_user")
@@ -50,12 +47,7 @@ public class User {
     @Schema(description = "Set of skills the user has", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Skill> skills = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_projects",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id")
-    )
+    @ManyToMany(mappedBy = "collaborators")
     @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Project> projects = new HashSet<>();
 
@@ -92,4 +84,18 @@ public class User {
     public void setComments(final Comment... comments) {
         this.comments.addAll(Arrays.asList(comments));
     }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(id, user.getId());
+    }
+
 }

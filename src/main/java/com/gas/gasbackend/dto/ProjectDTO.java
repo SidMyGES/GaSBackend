@@ -50,16 +50,16 @@ public class ProjectDTO {
 
     // Optionally, you could add a method to convert a Project to ProjectDTO if needed
     public static ProjectDTO fromEntity(Project project) {
-//        int likedBy = project.getLikedBy().size();
+        int likedBy = project.getLikedBy().size();
         Set<String> skillsUsed = project.getSkillsUsed().stream().map(Skill::getName).collect(Collectors.toSet());
-//        Set<String> collaborators = project.getCollaborators().stream().map(User::getId).collect(Collectors.toSet()); // TODO changer en DTO
-//        Set<Slice> slices = project.getSlices(); // TODO changer en DTO
-//        int commentCount = project.getComments().size();
+        Set<String> collaborators = project.getCollaborators().stream().map(User::getId).collect(Collectors.toSet()); // TODO changer en DTO
+        Set<Slice> slices = project.getSlices(); // TODO changer en DTO
+        int commentCount = project.getComments().size();
 
-        int likedBy= 1;
-        Set<String> collaborators = new HashSet<>();
-        Set<Slice> slices = new HashSet<>();
-        int commentCount = 1;
+//        int likedBy= 1;
+        //Set<String> collaborators = new HashSet<>();
+        //Set<Slice> slices = new HashSet<>();
+        //int commentCount = 1;
         return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), likedBy, skillsUsed, collaborators, slices, commentCount);
     }
 

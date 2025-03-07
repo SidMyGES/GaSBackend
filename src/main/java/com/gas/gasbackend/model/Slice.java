@@ -7,10 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Data
@@ -36,6 +33,13 @@ public class Slice {
     @Schema(description = "Skills demonstrated by this slice", requiredMode = Schema.RequiredMode.REQUIRED)
     private Set<Skill> skills = new HashSet<>();
 
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "slice_id")
+//    @Schema(description = "Comments left by users on this slice")
+//    private Set<Comment> comments = new HashSet<>();
+
+    @Schema(description = "Number of likes this slice received")
+    private int likes;
 
     /**
      * Constructor for Slice with mandatory name.
@@ -45,7 +49,7 @@ public class Slice {
     public Slice(final String name) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
-
+        this.likes = 0;
     }
 
     /**
@@ -57,4 +61,25 @@ public class Slice {
         this.skills.addAll(Arrays.asList(skills));
     }
 
+//    /**
+//     * Adds comments to the slice.
+//     *
+//     * @param comments comments to be added
+//     */
+//    public void addComments(final Comment... comments) {
+//        this.comments.addAll(Arrays.asList(comments));
+//    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(id, user.getId());
+    }
 }

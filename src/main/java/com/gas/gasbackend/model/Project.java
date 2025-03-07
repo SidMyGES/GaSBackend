@@ -2,18 +2,13 @@ package com.gas.gasbackend.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Data
+//@EqualsAndHashCode(exclude = {"likedBy", "comments", "skillsUsed", "collaborators", "slices"})
 @Table(name = "projects")
 @NoArgsConstructor
 @Schema(description = "Represents a project created by users.")
@@ -87,5 +82,16 @@ public class Project {
         this.slices.addAll(Arrays.asList(slices));
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(id, user.getId());
+    }
 
 }
