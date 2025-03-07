@@ -36,13 +36,6 @@ public class Slice {
     @Schema(description = "Skills demonstrated by this slice", requiredMode = Schema.RequiredMode.REQUIRED)
     private Set<Skill> skills = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "slice_id")
-    @Schema(description = "Comments left by users on this slice")
-    private Set<Comment> comments = new HashSet<>();
-
-    @Schema(description = "Number of likes this slice received")
-    private int likes;
 
     /**
      * Constructor for Slice with mandatory name.
@@ -52,7 +45,7 @@ public class Slice {
     public Slice(final String name) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
-        this.likes = 0;
+
     }
 
     /**
@@ -64,12 +57,4 @@ public class Slice {
         this.skills.addAll(Arrays.asList(skills));
     }
 
-    /**
-     * Adds comments to the slice.
-     *
-     * @param comments comments to be added
-     */
-    public void addComments(final Comment... comments) {
-        this.comments.addAll(Arrays.asList(comments));
-    }
 }

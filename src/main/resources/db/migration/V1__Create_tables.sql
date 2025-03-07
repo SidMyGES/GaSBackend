@@ -91,12 +91,9 @@ CREATE TABLE comments (
                           writer_id VARCHAR(255) NOT NULL,
                           parent_id VARCHAR(255),
                           project_id VARCHAR(255),
-                          slice_id VARCHAR(255),
                           FOREIGN KEY (writer_id) REFERENCES app_user(id) ON DELETE CASCADE,
                           FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE,
-                          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-                          FOREIGN KEY (slice_id) REFERENCES slices(id) ON DELETE CASCADE
-);
+                          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);
 
 INSERT INTO app_user (id, name, last_name, email, password, likes) VALUES
                                                                        ('user1', 'Alice', 'Dupont', 'alice.dupont@example.com', 'password123', 5),
@@ -167,9 +164,9 @@ INSERT INTO slice_skills (slice_id, skill_id) VALUES
 
 
 
-INSERT INTO comments (id, content, writer_id, parent_id, project_id, slice_id) VALUES
-                                                                                   ('comment1', 'Super projet !', 'user1', NULL, 'proj1', NULL),
-                                                                                   ('comment2', 'J’aime beaucoup l’interface.', 'user2', 'comment1', 'proj1', NULL),
-                                                                                   ('comment3', 'Bon choix de technologies.', 'user3', NULL, 'proj2', 'slice3');
+INSERT INTO comments (id, content, writer_id, parent_id, project_id) VALUES
+                                                                                   ('comment1', 'Super projet !', 'user1', NULL, 'proj1'),
+                                                                                   ('comment2', 'J’aime beaucoup l’interface.', 'user2', 'comment1', 'proj1'),
+                                                                                   ('comment3', 'Bon choix de technologies.', 'user3', NULL, 'proj2');
 
 
