@@ -1,6 +1,7 @@
 package com.gas.gasbackend.repository;
 
 import com.gas.gasbackend.model.Slice;
+import com.gas.gasbackend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -28,4 +29,9 @@ public interface SliceRepository extends JpaRepository<Slice, String> {
      * @return List of slices
      */
     List<Slice> findBySkills_Id(String skillId);
+
+
+    List<Slice> findBytargetUser_Id(String targetUserId);
+
+    List<Slice> findBySourceUser_Id(String sourceUserId);
 }

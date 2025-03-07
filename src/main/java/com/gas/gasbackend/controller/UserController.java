@@ -4,7 +4,12 @@ package com.gas.gasbackend.controller;
 import java.util.List;
 import java.util.Set;
 
+import com.gas.gasbackend.dto.SliceDTO;
 import com.gas.gasbackend.dto.user.UserCreateDTO;
+import com.gas.gasbackend.model.Slice;
+import com.gas.gasbackend.service.SliceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +31,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class UserController {
 
     private final UserService userService;
+    private final SliceService sliceService;
 
-    public UserController(final UserService userService){
+    @Autowired
+    public UserController(final UserService userService, final SliceService sliceService){
         this.userService = userService;
+        this.sliceService = sliceService;
     }
 
     @PostMapping
@@ -61,6 +69,10 @@ public class UserController {
         userService.deleteUser(userID);
     }
 
-
+    @Operation(summary = "Retrieves slices targeted to this user")
+    @GetMapping("/slices/{targetUserId}")
+    public ResponseEntity<List<SliceDTO>> getSlicesByTagretId(@PathVariable final String targetUserId){
+        return ResponseEntity.ok(sliceService.getSlicesByTargetUserId(targetUserId));
+    }
 
 }
