@@ -1,5 +1,6 @@
 package com.gas.gasbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,6 +28,7 @@ public class Comment {
     @Schema(description = "Parent comment, null if top-level comment")
     private Comment parent;
 
+    //@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "writer_id", nullable = false)
     @Schema(description = "The user who wrote the comment", requiredMode = Schema.RequiredMode.REQUIRED)

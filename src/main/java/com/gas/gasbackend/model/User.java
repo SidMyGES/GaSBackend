@@ -2,6 +2,7 @@ package com.gas.gasbackend.model;
 
 import com.gas.gasbackend.dto.user.UserCreateDTO;
 import com.gas.gasbackend.dto.user.UserDTO;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -36,8 +37,9 @@ public class User {
     @Schema(description = "User's password", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
+    //@JsonManagedReference
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Schema(description = "Comments made by the user", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Comments written by the user", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany
@@ -52,6 +54,7 @@ public class User {
     @ManyToMany(mappedBy = "collaborators")
     @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Project> projects = new HashSet<>();
+
 
     @Schema(description = "Number of likes received by the user")
     private int likes;

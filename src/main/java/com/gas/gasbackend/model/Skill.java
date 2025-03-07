@@ -1,7 +1,5 @@
 package com.gas.gasbackend.model;
 
-import java.util.UUID;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -24,6 +22,7 @@ import java.util.UUID;
 public class Skill {
 
     @Id
+    @Setter(AccessLevel.NONE)
     @Schema(description = "Unique identifier for the skill", accessMode = Schema.AccessMode.READ_ONLY)
     private String id;
 
@@ -36,10 +35,9 @@ public class Skill {
         this.name = name;
     }
 
-
-
     @Override
     public int hashCode() {
+
         return Objects.hash(id);
     }
     @Override
