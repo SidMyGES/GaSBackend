@@ -9,16 +9,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "skills")
 @NoArgsConstructor
-@Schema(description = "Represents a particular skill possessed by a user or showcased in a slice/project")
+@Table(name = "skills")
+@Schema(description = "Represents a skill possessed by a user")
 public class Skill {
 
     @Id
@@ -28,22 +25,16 @@ public class Skill {
     @Schema(description = "Name of the skill", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
+    @Schema(description = "Shape name related to the skill")
+    private String shapeName;
+
     public Skill(String name, String shapeName) {
-        // Génération automatique de l'ID
-        this.id = java.util.UUID.randomUUID().toString();
+        this.id = UUID.randomUUID().toString();
         this.name = name;
+        this.shapeName = shapeName;
     }
 
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id);
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.getId());
+    public String getShapeName() {
+        return shapeName;
     }
 }

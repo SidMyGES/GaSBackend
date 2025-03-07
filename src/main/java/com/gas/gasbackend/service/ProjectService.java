@@ -1,24 +1,37 @@
 package com.gas.gasbackend.service;
 
 import com.gas.gasbackend.dto.ProjectDTO;
-import com.gas.gasbackend.model.*;
+import com.gas.gasbackend.model.Project;
+import com.gas.gasbackend.model.Skill;
+import com.gas.gasbackend.model.User;
 import com.gas.gasbackend.repository.ProjectRepository;
+import com.gas.gasbackend.repository.SliceRepository;
+import com.gas.gasbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 @Service
 public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private SliceRepository sliceRepository;
+
     public List<ProjectDTO> getAllProjects() {
         return projectRepository.findAll().stream().map(ProjectDTO::fromEntity).toList();
     }
 
     public ProjectDTO getProject(String id) {
-        return ProjectDTO.fromEntity(projectRepository.findById(id).orElse(null));
+        return projectRepository.findById(id)
+                .map(ProjectDTO::fromEntity)
+                .orElse(null);
     }
 
     public ProjectDTO createProject(ProjectDTO project) {
@@ -37,99 +50,66 @@ public class ProjectService {
     }
 
     public ProjectDTO updateProject(String id, ProjectDTO project) {
-        Project projectToUpdate = projectRepository.findById(id).orElse(null);
-        if (projectToUpdate != null) {
-            projectToUpdate.setName(project.getName());
-            projectToUpdate.setDescription(project.getDescription());
-            return ProjectDTO.fromEntity(projectRepository.save(projectToUpdate));
-        }
-        return null;
+        return projectRepository.findById(id)
+                .map(existingProject -> {
+                    existingProject.setName(project.getName());
+                    existingProject.setDescription(project.getDescription());
+                    return ProjectDTO.fromEntity(projectRepository.save(existingProject));
+                })
+                .orElse(null);
     }
 
     public void likeProject(String id, String userId) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
-//            project.getLikedBy().add(userId); // TODO avoir le userrepo pour trouver le user
+        Optional<Project> projectOpt = projectRepository.findById(id);
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        if (projectOpt.isPresent() && userOpt.isPresent()) {
+            Project project = projectOpt.get();
+            project.getLikedBy().add(userOpt.get());
             projectRepository.save(project);
         }
     }
 
     public void removeLike(String id, String userId) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
-            project.getLikedBy().remove(userId);
+        Optional<Project> projectOpt = projectRepository.findById(id);
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        if (projectOpt.isPresent() && userOpt.isPresent()) {
+            Project project = projectOpt.get();
+            project.getLikedBy().remove(userOpt.get());
             projectRepository.save(project);
         }
     }
 
     public void addSkill(String id, Skill skill) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
+        projectRepository.findById(id).ifPresent(project -> {
             project.getSkillsUsed().add(skill);
             projectRepository.save(project);
-        }
+        });
     }
 
     public void removeSkill(String id, String skillId) {
-        Project project = projectRepository.findById(id).orElse(null);
-
-        if (project != null) {
+        projectRepository.findById(id).ifPresent(project -> {
             project.getSkillsUsed().removeIf(skill -> skill.getId().equals(skillId));
             projectRepository.save(project);
-        }
+        });
     }
 
-    public void addCollaborator(String id, String collaborator) {
-        Project project = projectRepository.findById(id).orElse(null);
+    public void addCollaborator(String id, String collaboratorId) {
+        Optional<Project> projectOpt = projectRepository.findById(id);
+        Optional<User> userOpt = userRepository.findById(collaboratorId);
 
-        if (project != null) {
-//            project.getCollaborators().add(collaborator); // TODO avoir le userrepo pour trouver le user
+        if (projectOpt.isPresent() && userOpt.isPresent()) {
+            Project project = projectOpt.get();
+            project.getCollaborators().add(userOpt.get());
             projectRepository.save(project);
         }
     }
 
-    public void removeCollaborator(String id, String collaborator) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
-            project.getCollaborators().removeIf(user -> user.getId().equals(collaborator));
+    public void removeCollaborator(String id, String collaboratorId) {
+        projectRepository.findById(id).ifPresent(project -> {
+            project.getCollaborators().removeIf(user -> user.getId().equals(collaboratorId));
             projectRepository.save(project);
-        }
-    }
-
-    public void addSlice(String id, Slice slice) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
-            project.getSlices().add(slice); //TODO avoir le slicerepo pour trouver le slice
-            projectRepository.save(project);
-        }
-    }
-
-    public void removeSlice(String id, String sliceId) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
-            project.getSlices().removeIf(slice -> slice.getId().equals(sliceId));
-            projectRepository.save(project);
-        }
-    }
-
-    public void addComment(String id, Comment comment) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
-            project.getComments().add(comment); //TODO avoir le commentrepo pour trouver le comment
-            projectRepository.save(project);
-        }
-    }
-
-    public void removeComment(String id, String commentId) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
-            project.getComments().removeIf(comment -> comment.getId().equals(commentId));
-            projectRepository.save(project);
-        }
-    }
-
-    public List<Comment> getComments(String id) { //TODO avoir le DTO
-        Project project = projectRepository.findById(id).orElse(null);
-        return project != null ? project.getComments().stream().toList() : null;
+        });
     }
 }

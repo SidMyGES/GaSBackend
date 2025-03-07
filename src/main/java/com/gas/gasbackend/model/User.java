@@ -20,8 +20,7 @@ public class User {
 
     @Id
     @Setter(AccessLevel.NONE)
-    @Schema(description = "Unique identifier for the user",
-            accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Unique identifier for the user", accessMode = Schema.AccessMode.READ_ONLY)
     private String id;
 
     @Schema(description = "User's first name", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -58,6 +57,15 @@ public class User {
     @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Project> projects = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_liked_projects",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    @Schema(description = "Projects liked by the user")
+    private Set<Project> likedProjects = new HashSet<>();
+
     @Schema(description = "Number of likes received by the user")
     private int likes;
 
@@ -70,29 +78,15 @@ public class User {
         this.likes = 0;
     }
 
-
-    public void addSkills(Skill... skills) {
-        this.skills.addAll(Arrays.asList(skills));
+    public void addLikedProject(Project project) {
+        this.likedProjects.add(project);
+        project.getLikedBy().add(this);
     }
 
-    public void addProjects(final Project... projects) {
-        this.projects.addAll(Arrays.asList(projects));
+    public void removeLikedProject(Project project) {
+        this.likedProjects.remove(project);
+        project.getLikedBy().remove(this);
     }
-
-    public void setProject(Project project) {
-        this.projects.add(project);
-        project.getCollaborators().add(this);
-    }
-
-    public void addComments(Comment... comments) {
-        this.comments.addAll(Arrays.asList(comments));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
 
     public static UserDTO mapUserToDto(final User user) {
         return new UserDTO(
@@ -103,7 +97,7 @@ public class User {
         );
     }
 
-    public static User mapDtoToUser(final UserCreateDTO userDTO){
+    public static User mapDtoToUser(final UserCreateDTO userDTO) {
         return new User(
                 userDTO.getFirstName(),
                 userDTO.getLastName(),
@@ -111,5 +105,4 @@ public class User {
                 ""
         );
     }
-
 }

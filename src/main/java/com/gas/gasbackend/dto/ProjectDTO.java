@@ -1,5 +1,6 @@
 package com.gas.gasbackend.dto;
 
+import com.gas.gasbackend.dto.user.UserDTO;
 import com.gas.gasbackend.model.Project;
 import com.gas.gasbackend.model.Skill;
 import com.gas.gasbackend.model.Slice;
@@ -11,53 +12,60 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-@Schema(description = "Data transfer object representing a project (pizza) that a user has worked on.")
+@Schema(description = "Data transfer object representing a project that a user has worked on.")
 public class ProjectDTO {
     @Schema(description = "Unique identifier for the project")
     private String id;
+
     @Schema(description = "Name of the project")
     private String name;
 
-    @Schema(description = "description of the project")
+    @Schema(description = "Description of the project")
     private String description;
 
-    @Schema(description = "number of likes")
+    @Schema(description = "Number of likes")
     private int likes;
 
-    @Schema(description = "Skills (toppings) used in this project")
+    @Schema(description = "Skills used in this project")
     private Set<String> skillsUsed;
 
     @Schema(description = "Users who collaborated on this project")
-    private Set<User> collaborators; //todo changer en DTO
+    private Set<UserDTO> collaborators;
 
-    @Schema(description = "Slices (mentorship offers/requests) associated with this project")
-    private Set<Slice> slices; //todo changer en DTO
+    @Schema(description = "Slices associated with this project")
+    private Set<SliceDTO> slices;
 
     @Schema(description = "Number of comments left on the project")
     private int commentCount;
 
-    public ProjectDTO(String id, String name, String description, int likedBy, Set<String> skillsUsed, Set<User> collaborators, Set<Slice> slices, int commentCount) {
+    public ProjectDTO(String id, String name, String description, int likes, Set<String> skillsUsed, Set<UserDTO> collaborators, Set<SliceDTO> slices, int commentCount) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.likes = likedBy;
+        this.likes = likes;
         this.skillsUsed = skillsUsed;
         this.collaborators = collaborators;
         this.slices = slices;
         this.commentCount = commentCount;
     }
 
-    // Optionally, you could add a method to convert a Project to ProjectDTO if needed
+    /**
+     * Convertit un `Project` en `ProjectDTO`
+     */
     public static ProjectDTO fromEntity(Project project) {
-        int likedBy = project.getLikedBy().size();
+        int likes = project.getLikedBy().size();
         Set<String> skillsUsed = project.getSkillsUsed().stream().map(Skill::getName).collect(Collectors.toSet());
-        Set<User> collaborators = project.getCollaborators(); // TODO changer en DTO
-        Set<Slice> slices = project.getSlices(); // TODO changer en DTO
+        Set<UserDTO> collaborators = project.getCollaborators().stream().map(User::mapUserToDto).collect(Collectors.toSet());
+        Set<SliceDTO> slices = project.getSlices().stream().map(Slice::mapSliceToDto).collect(Collectors.toSet());
         int commentCount = project.getComments().size();
-        return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), likedBy, skillsUsed, collaborators, slices, commentCount);
+
+        return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), likes, skillsUsed, collaborators, slices, commentCount);
     }
 
-    public static Project toEntity(ProjectDTO project) {
-        return new Project(/*project.getName(), project.getDescription()*/);
+    /**
+     * Convertit un `ProjectDTO` en `Project`
+     */
+    public static Project toEntity(ProjectDTO dto) {
+        return new Project(dto.getName(), dto.getDescription());
     }
 }
