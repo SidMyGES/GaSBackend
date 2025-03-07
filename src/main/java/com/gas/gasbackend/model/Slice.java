@@ -1,5 +1,6 @@
 package com.gas.gasbackend.model;
 
+import com.gas.gasbackend.dto.ProjectDTO;
 import com.gas.gasbackend.dto.SliceDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -110,7 +111,7 @@ public class Slice {
                 slice.getSkills(),
                 User.mapUserToDto(slice.getSourceUser()),
                 User.mapUserToDto(slice.getTargetUser()),
-                Project.mapProjectToDto(slice.getProject())
+                ProjectDTO.fromEntity(slice.getProject())
         );
     }
 }
