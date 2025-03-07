@@ -19,7 +19,6 @@ import lombok.Setter;
 public class Skill {
 
     @Id
-    @Setter(AccessLevel.NONE)
     @Schema(description = "Unique identifier for the skill", accessMode = Schema.AccessMode.READ_ONLY)
     private String id;
 

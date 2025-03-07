@@ -35,7 +35,7 @@ public class SkillController {
     @PostMapping
     public ResponseEntity<Skill> createSkill(@RequestBody Skill skill) {
         String generatedId = UUID.randomUUID().toString();
-        skill.setID(generatedId);
+        skill.setId(generatedId);
         Skill createdSkill = skillRepository.save(skill);
         return new ResponseEntity<>(createdSkill, HttpStatus.CREATED);
     }

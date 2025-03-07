@@ -58,6 +58,6 @@ public class ProjectDTO {
     }
 
     public static Project toEntity(ProjectDTO project) {
-        return new Project(project.getName(), project.getDescription());
+        return new Project(/*project.getName(), project.getDescription()*/);
     }
 }
