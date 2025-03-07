@@ -27,13 +27,7 @@ public class Project {
     @Schema(description = "Description of the project")
     private String description;
 
-    @Schema(description = "Number of likes received by the project")
-    @JoinTable(
-            name = "project_likes",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    @ManyToMany
+    @ManyToMany(mappedBy = "likedProjects")
     private Set<User> likedBy = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -49,10 +43,9 @@ public class Project {
     )
     @Schema(description = "Skills demonstrated in this project", requiredMode = Schema.RequiredMode.REQUIRED)
     private Set<Skill> skillsUsed = new HashSet<>();
-    // Relation bidirectionnelle Many-to-Many avec User
-    // Ce côté est propriétaire et définit la table de jointure "project_collaborators"
+
+
     @ManyToMany(mappedBy = "projects")
-    @Schema(description = "Users who collaborated on this project", requiredMode = Schema.RequiredMode.REQUIRED)
     private Set<User> collaborators = new HashSet<>();
 
     // Relation One-to-Many unidirectionnelle avec Slice.

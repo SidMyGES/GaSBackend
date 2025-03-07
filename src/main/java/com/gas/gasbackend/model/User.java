@@ -51,8 +51,12 @@ public class User {
     @Schema(description = "Set of skills the user has", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Skill> skills = new HashSet<>();
 
-    @ManyToMany(mappedBy = "collaborators")
-    @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
+    @ManyToMany
+    @JoinTable(
+            name = "project_collaborators",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
     private Set<Project> projects = new HashSet<>();
 
 
@@ -63,8 +67,8 @@ public class User {
     @ManyToMany
     @JoinTable(
             name = "project_likes",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
     )
     private Set<Project> likedProjects = new HashSet<>();
 
