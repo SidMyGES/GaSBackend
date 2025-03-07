@@ -1,5 +1,7 @@
 package com.gas.gasbackend.controller;
 
+import com.gas.gasbackend.dto.SliceDTO;
+import com.gas.gasbackend.dto.user.UserDTO;
 import com.gas.gasbackend.model.Comment;
 import com.gas.gasbackend.model.Skill;
 import com.gas.gasbackend.model.Slice;

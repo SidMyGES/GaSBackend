@@ -1,5 +1,6 @@
 package com.gas.gasbackend.model;
 
+import com.gas.gasbackend.dto.ProjectDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -89,6 +91,19 @@ public class Project {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public static ProjectDTO mapProjectToDto(final Project project) {
+        return new ProjectDTO(
+                project.getId(),
+                project.getName(),
+                project.getDescription(),
+                project.getLikes(),
+                project.getSkillsUsed().stream().map(Skill::getId).collect(Collectors.toSet()),
+                project.getCollaborators(),
+                project.getSlices(),
+                project.getComments().size()
+        );
     }
 
 }

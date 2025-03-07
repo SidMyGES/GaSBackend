@@ -1,5 +1,7 @@
 package com.gas.gasbackend.model;
 
+import com.gas.gasbackend.dto.user.UserCreateDTO;
+import com.gas.gasbackend.dto.user.UserDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -90,6 +92,25 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+
+    public static UserDTO mapUserToDto(final User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getName(),
+                user.getLastName(),
+                user.getEmail()
+        );
+    }
+
+    private static User mapDtoToUser(final UserCreateDTO userDTO){
+        return new User(
+                userDTO.getFirstName(),
+                userDTO.getLastName(),
+                userDTO.getEmail(),
+                ""
+        );
     }
 
 }

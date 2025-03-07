@@ -1,13 +1,15 @@
 package com.gas.gasbackend.service;
 
-import com.gas.gasbackend.model.Comment;
-import com.gas.gasbackend.model.Skill;
-import com.gas.gasbackend.model.Slice;
+import com.gas.gasbackend.dto.SliceDTO;
+import com.gas.gasbackend.dto.user.UserCreateDTO;
+import com.gas.gasbackend.dto.user.UserDTO;
+import com.gas.gasbackend.model.*;
 import com.gas.gasbackend.repository.SliceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service layer for managing slices.
@@ -106,5 +108,17 @@ public class SliceService {
     public List<Slice> getSlicesBySkillId(final String skillId) {
         return sliceRepository.findBySkills_Id(skillId);
     }
+
+    public List<SliceDTO> getSlicesByTargetUserId(final String targetUserId) {
+        return sliceRepository.findBytargetUser_Id(targetUserId).stream().map(Slice::mapSliceToDto).toList();
+    }
+
+    public List<SliceDTO> getSlicesBySourceUserId(final String sourceUserId) {
+        return sliceRepository.findBytargetUser_Id(sourceUserId).stream().map(Slice::mapSliceToDto).toList();
+    }
+
+
+
+
 
 }
