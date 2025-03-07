@@ -1,7 +1,9 @@
 package com.gas.gasbackend.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,9 +29,15 @@ public class Skill {
     @Schema(description = "Name of the skill", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    public Skill(final String name) {
-        this.id = UUID.randomUUID().toString();
+    @Schema(description = "The shape associated with the skill for visual representation",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    private String shapeName;
+
+    public Skill(String name, String shapeName) {
+        // Génération automatique de l'ID
+        this.id = java.util.UUID.randomUUID().toString();
         this.name = name;
+        this.shapeName = shapeName;
     }
 
 

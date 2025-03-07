@@ -51,7 +51,6 @@ public class User {
     @Schema(description = "Projects the user is working on or has created", accessMode = Schema.AccessMode.READ_ONLY)
     private Set<Project> projects = new HashSet<>();
 
-
     @Schema(description = "Number of likes received by the user")
     private int likes;
 
@@ -77,11 +76,17 @@ public class User {
         this.skills.addAll(Arrays.asList(skills));
     }
 
-    public void setProjects(final Project... projects) {
+    public void addProjects(final Project... projects) {
         this.projects.addAll(Arrays.asList(projects));
     }
 
-    public void setComments(final Comment... comments) {
+    // Méthode qui gère la relation bidirectionnelle
+    public void setProject(Project project) {
+        this.projects.add(project);
+        project.getCollaborators().add(this);
+    }
+
+    public void addComments(Comment... comments) {
         this.comments.addAll(Arrays.asList(comments));
     }
 
