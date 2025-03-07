@@ -1,10 +1,13 @@
 package com.gas.gasbackend.service;
 
+import com.gas.gasbackend.dto.SliceCreateDTO;
 import com.gas.gasbackend.dto.SliceDTO;
 import com.gas.gasbackend.dto.user.UserCreateDTO;
 import com.gas.gasbackend.dto.user.UserDTO;
 import com.gas.gasbackend.model.*;
+import com.gas.gasbackend.repository.ProjectRepository;
 import com.gas.gasbackend.repository.SliceRepository;
+import com.gas.gasbackend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +21,13 @@ import java.util.stream.Collectors;
 public class SliceService {
 
     private final SliceRepository sliceRepository;
+    private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
 
-    public SliceService(final SliceRepository sliceRepository) {
+    public SliceService(final SliceRepository sliceRepository, final UserRepository userRepository, final ProjectRepository projectRepository) {
         this.sliceRepository = sliceRepository;
+        this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -48,8 +55,8 @@ public class SliceService {
      * @param slice Slice to save
      * @return Saved slice
      */
-    public Slice createSlice(final Slice slice) {
-        return sliceRepository.save(slice);
+    public Slice createSlice(final SliceCreateDTO slice) {
+       return sliceRepository.save(mapDtoToSlice(slice));
     }
 
     /**
@@ -118,7 +125,14 @@ public class SliceService {
     }
 
 
-
+    public Slice mapDtoToSlice(final SliceCreateDTO sliceDto) {
+        return new Slice(
+                "slice_from_front",
+                projectRepository.findById(sliceDto.getProjectId()).get(),
+                userRepository.findById(sliceDto.getTargetId()).get(),
+                null
+        );
+    }
 
 
 }

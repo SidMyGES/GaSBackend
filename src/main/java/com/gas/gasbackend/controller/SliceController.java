@@ -1,5 +1,6 @@
 package com.gas.gasbackend.controller;
 
+import com.gas.gasbackend.dto.SliceCreateDTO;
 import com.gas.gasbackend.dto.SliceDTO;
 import com.gas.gasbackend.dto.user.UserDTO;
 import com.gas.gasbackend.model.Comment;
@@ -8,6 +9,7 @@ import com.gas.gasbackend.model.Slice;
 import com.gas.gasbackend.service.SliceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +48,9 @@ public class SliceController {
 
     @Operation(summary = "Create a new slice")
     @PostMapping
-    public ResponseEntity<Slice> createSlice(@RequestBody final Slice slice) {
-        return ResponseEntity.ok(sliceService.createSlice(slice));
+    public ResponseEntity<Slice> createSlice(@RequestBody final SliceCreateDTO sliceDto) {
+        Slice response = sliceService.createSlice(sliceDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "Add skill to slice")

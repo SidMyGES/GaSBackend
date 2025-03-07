@@ -1,5 +1,6 @@
 package com.gas.gasbackend.model;
 
+import com.gas.gasbackend.dto.SliceCreateDTO;
 import com.gas.gasbackend.dto.SliceDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
