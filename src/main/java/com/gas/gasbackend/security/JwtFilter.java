@@ -25,7 +25,6 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String path = request.getServletPath();
-        // Bypass pour les endpoints d'authentification, Swagger, docs et H2 Console
         if (path.startsWith("/api/auth")
                 || path.startsWith("/api/swagger")
                 || path.startsWith("/api/swagger-ui")

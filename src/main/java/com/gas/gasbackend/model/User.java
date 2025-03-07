@@ -79,7 +79,6 @@ public class User {
         this.projects.addAll(Arrays.asList(projects));
     }
 
-    // Méthode qui gère la relation bidirectionnelle
     public void setProject(Project project) {
         this.projects.add(project);
         project.getCollaborators().add(this);
